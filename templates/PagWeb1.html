@@ -1,0 +1,78 @@
+<html>
+<head>
+ <title>Nº Aleatorios</title>
+ <link rel="icon" type="image/jpg" href="static/pics/icono.jpg"/>
+ <link rel="stylesheet" type="text/css" href="static/css/Web1Class.css" media="all"/>
+ <script type="text/javascript" src="static/js/Web1JS.js"></script>
+</head>
+<body>
+ <table style="border: 1px solid #000000; background-color: #ffffff;" height="50" width="100%"><tr>
+ <td><font face="times new roman" style="margin-left:52%" size="5"><b> COMPUTACI&Oacute;N EN RED </b></font><td>
+ <td><a target="blank" href="http://escuelapolitecnica.uah.es/"><img class="cabecera" name="uah" src="/static/pics/uah.gif" 
+	onmouseout="document.uah.src='/static/pics/uah.gif'" onmouseover="document.uah.src='/static/pics/uah_sel.gif'"></img></a></td>
+ </tr></table>
+ 
+<!-- Umbral --> 
+ {% if umbIN == 0 %} <!-- si no se ha introducido un umbral --> 
+ <p align="center" font="Arial"><br><br>
+  Puede determinar un umbral para conocer la fecha y la hora en que se super&oacute; o se superar&aacute; el mismo</p>
+ <form action="/u" method="POST" name="fUmbral">
+  <table cellspacing="10" align="center"><tr>
+   <td><input class="box" type="text" name="umbral" maxlength="5"></td>
+   <td><input class="boton" type="button" value="Umbral" onclick="validar()"></td>
+   <td><input type="checkbox" id="cbox1" name="Modo1" value="Historico" checked onclick="check1()"> Hist&oacute;rico <br>
+   <input type="checkbox" id="cbox2" name="Modo2" value="Actual" onclick="check2()"> Actual </td>
+  </table></tr>
+ </form>
+ {% else %} <!-- si ya se ha introducido un umbral -->  
+  {% if UmbActualOK == 1 %}
+ <p align="center" font="Arial"><br><br>
+  Se ha introducido {{ val_umbral }} como umbral para comprobar los valores actuales aun sin almacenar.<br>
+  <b>Recibir&aacute; un aviso cuando se supere dicho umbral.</b></p>
+  {% else %}
+ <p align="center" font="Arial"><br><br>
+  Se ha introducido {{ val_umbral }} como umbral para comprobar el hist&oacute;rico de datos almacenados</p>
+  {% endif %}
+ <form action="/">
+  <table cellspacing="5" align="center"><tr>
+   <td><input class="boton" type="submit" value="Nuevo umbral"></td>
+   {% if UmbActualOK == 1 %}
+  <!-- Se avisa mediante un mensaje diferente --> 
+   {% else %}
+    {% if umbSup == 1 %} <!-- si se supera el umbral --> 
+   <td><img class="ok" src="/static/pics/ok.jpg"/></td>
+   <td><p>Superado el {{ fecha }} a las {{ hora }}</p></td>   
+    {% else %}
+   <td><img class="ok" src="/static/pics/nok.jpg"></img></td>
+   <td><p>Umbral no superado. Pruebe de nuevo.</p></td>
+    {% endif %}
+   {% endif %}
+  </tr></table>
+ </form>
+ {% endif %}
+
+<!-- Media --> 
+ <p align="center" font="Arial"><br>
+  Puede realizar la media de los valores almacenados de la BD (alternando BD interna/externa)</p>
+ <form action="/m">
+  <table cellspacing="5" align="center"><tr>
+   <td><input class="boton" type="submit" value="Media"></td>
+   {% if mean == 1 %}  
+   <td width="13"/>
+   <td>La media es <b> {{ media }} </b><br>
+   <p> BD utilizada -> <b> {{ BD }} </b></p></td>
+   {% endif %}
+  </tr></table>
+ </form>
+
+<!-- Gráfica --> 
+ <p align="center" font="Arial"><br>
+  Puede visualizar la representaci&oacute;n gr&aacute;fica de los valores almacenados en la BD externa </p> 
+ <a href="https://beebotte.com/dash/d2e61d60-b89a-11e7-bfef-6f68fef5ca14#.We9bno9OL-s" target="_blank">
+  <div align="center"><input class="boton" name="graf" type="submit" value="Gr&aacute;fica" onclick="grafica()"></div>
+ </a> 
+
+<!-- Firma --> 
+ <p class="firma"><font face="Verdana" size="1"> &Oacute;scar Gonz&aacute;lez Caballero<br>2017/18 - UAH </font></p>
+ </body>
+</html>
