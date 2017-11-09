@@ -43,9 +43,3 @@ function validar(){
 		}
 	}
 }	
-
-// Función para popup de la gráfica
-function grafica(){
-	open('https://beebotte.com/dash/d2e61d60-b89a-11e7-bfef-6f68fef5ca14#.We9bno9OL-s','','top=10,left=300,width=620,height=380');
-	document.graf.submit();
-}	

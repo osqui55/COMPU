@@ -2,86 +2,10 @@
 from flask import render_template
 from flask import request
 from beebotte import *
+import pymongo
 from pymongo import MongoClient
 
 app = Flask(__name__)
-
-
-
-
-import urllib2
-import re
-from datetime import *
-import Pract1
-from beebotte import *
-from pymongo import *
-import schedule
-import time
-
-def runtime():
- print 'tu puta madre'
- #Se obtiene el primer numero aleatorio de la URL
- url = "http://www.numeroalazar.com.ar/"
- urltext = urllib2.urlopen(url).read()
- datos = re.findall("(100|[0-9]{1,2})[.]+[0-9]{2}",urltext)
- #Se coge unicamente el primero
- tam = len(datos)
- Nnum = 50 #cantidad de numeros por defecto
- if tam > Nnum:
-  primero = tam - Nnum
- else:
-  primero = 0
- Naleatorio = datos[primero]
-
- #Se obtiene la fecha  y hora del servidor de la aplicacion
- fechahora = str(datetime.today()).split(" ")
- fecha = fechahora[0].split('-')
- dia = fecha[2]
- mes = fecha[1]
- anno =fecha[0]
- horaTot = fechahora[1].split(".")
- hora = horaTot[0]
-
- #Se guarda en la BD local (MongoDB)
- client = MongoClient("localhost", 27017) #Se crea conexion
- db = client.BDinterna
- result = db.dataset.insert_one(
-   {
-    "num" : Naleatorio,
-    "dia" : dia,
-    "mes" : mes,
-    "anno" : anno,
-    "hora" : hora
-   }
-  )
- 
- #Se guarda en la BD externa (Beebotte)
- bclient = BBT("acf58919629d0c03c6499ad25d366389", 
- "09b9f3e524c3d4b711f467feb68f78b9706ee54f760c590d4ecb72791a06d29d") #Se crea conexion
- bclient.write('BDexterna', 'num', float(Naleatorio))
- bclient.write('BDexterna', 'hora', hora)
- bclient.write('BDexterna', 'dia', float(dia))
- bclient.write('BDexterna', 'mes', float(mes))
- bclient.write('BDexterna', 'anno', float(anno))
-
- #Se comprueba si supera umbral (Modo actual)
- try:
-  datos = pract1.memoria('leer', 0)
-  umbActual = datos[0]
-  umbValor = datos[1]
-  if umbActual == 1:
-   if Naleatorio > umbValor:
-    print 'Envio a la web mensaje avisando de SUPERADO'
-  else:
-   print 'Modo historico'
- except:
-  print 'No hay valores almacenados'
-  
-schedule.every(1).minutes.do(runtime)
-
-
-
-
 
 #Función para guardar un valor
 def memoria(opcion,valor):
@@ -107,15 +31,15 @@ def Inicio():
  
 #Carga la web con los datos correspondientes
  return render_template('PagWeb1.html', mean = mediaOK, umbIN = umbOK,
-umbSup = umbSup, UmbActualOK = UmbActualOK)
+umbSup = umbSup, UmbActualOK = UmbActualOK, graf = 0)
  
 @app.route('/u', methods=['POST'])
 def Valor_umbral():
- global UmbActualOK, umb, ult_valor, umbOK, umbSup, mediaOK, BD, BDusada, fechaFull, hora
+ global UmbActualOK, umb, ult_valor, umbOK, umbSup, mediaOK, BD, BDusada, fecha, hora
  
 #Se inicia la BD interna porque será más rapido
  Mclient = MongoClient('localhost', 27017)
- db = Mclient.BDinterna
+ db = Mclient.BDinter
  
  umbOK = 1
  mediaOK = 0
@@ -124,11 +48,12 @@ def Valor_umbral():
  try:
   modo = request.form['Modo1']
  except:
-  print "Se ha seleccionado el modo actual"
- try:
   modo = request.form['Modo2']
- except:
-  print "Se ha seleccionado el modo historico"
+  # print "Se ha seleccionado el modo actual"
+ # try:
+  # modo = request.form['Modo2']
+ # except:
+  # print "Se ha seleccionado el modo historico"
   
  #Se comprueba el modo seleccionado
  if modo == 'Actual':
@@ -140,45 +65,48 @@ def Valor_umbral():
  if UmbActualOK == 0: 
   memoria('guardar',[UmbActualOK,0])  
   #Se saca la información
-  cursor = db.dataset.find()
-  for aux in cursor:
-   if float(aux['num']) > umb:
-    umbSup = 1
-	#Se sacan la fecha y hora
-    d = aux['dia']
-    m = aux['mes']
-    a = aux['anno']
-    fechaFull = str(d) + '/' + str(m) + '/' + str(a)
-    hora = aux['hora']
-    break #Si se supera se deja de comprobar(1ª vez que se superó)
+  try:
+   valores = db.dataset.find({'num':{'$gt':float(umb)}})
+   umbSup = 1
+   ultVal = valores.sort('fecha',pymongo.DESCENDING)[0] #Se coge el último valor
+   Num = ultVal['num']
+   #Se obtiene la fecha  y hora del servidor de la aplicacion
+   fechahora = str(ultVal['fecha']).split(" ")
+   fecha = fechahora[0] #fecha aaaa-mm-dd
+   horaTot = fechahora[1].split(".")
+   hora = horaTot[0] #hora sin ms hh:mm:ss
+  except:
+   umbSup = 0
   
   #Carga la web con los datos correspondientes
   if umbSup == 1:
-   return render_template('PagWeb1.html', mean = mediaOK, umbIN = umbOK, fecha = fechaFull,
-   umbSup = umbSup, UmbActualOK = UmbActualOK, val_umbral = umb, hora = hora)
+   return render_template('PagWeb1.html', mean = mediaOK, umbIN = umbOK, fecha = fecha,
+   umbSup = umbSup, UmbActualOK = UmbActualOK, val_umbral = umb, hora = hora, graf = 0)
   else:
    return render_template('PagWeb1.html', mean = mediaOK, umbIN = umbOK, umbSup = umbSup, 
-   UmbActualOK = UmbActualOK, val_umbral = umb)
+   UmbActualOK = UmbActualOK, val_umbral = umb, graf = 0)
  
  #Si está en modo actual se guarda el umbral y se comprobarán nuevos valores
  else:  
   memoria('guardar',[UmbActualOK,umb])
   #Carga la web con los datos correspondientes
   return render_template('PagWeb1.html', mean = mediaOK, umbIN = umbOK, 
-  UmbActualOK = UmbActualOK, val_umbral = umb)  
+  UmbActualOK = UmbActualOK, val_umbral = umb, graf = 0)  
  
 @app.route('/m')
 def Calcula_media():
- global UmbActualOK, umb, ult_valor, umbOK, umbSup, mediaOK, BD, BDusada
+ global umb, mediaOK, BD, BDusada, cont
  mediaOK = 1
- UmbActualOK = 0
- umbOK = 0
  media = 0
  suma = 0.00
- 
  cont = 0
- pepe = 0
  
+ #Si no se ha iniciado la variable BD
+ try:
+  len(BD)
+ except:
+  BD = 'Beebotte'
+  
 #BD externa Beebotte (por defecto)
  if BD == 'Beebotte': 
   BDusada = 'Beebotte'
@@ -189,14 +117,11 @@ def Calcula_media():
   resource = Resource(bclient,'BDexterna','num') 
   valores = resource.read()
   
-  print str(len(valores))
-  
  #Se calcula la media
   for i in range(len(valores)):
-   print valores[i]['data']
    suma += valores[i]['data']
-  media = suma/float(i+1)
-    
+  media = round(float("{0:.2f}".format(suma/float(i+1))),2) #redondeando a dos decimales
+ 
 #BD interna MongoDB-pymongo
  else: 
   BDusada = 'MongoDB'
@@ -204,17 +129,21 @@ def Calcula_media():
   
  #Se sacan los valores
   client = MongoClient('localhost', 27017)
-  db = client.BDinterna
+  db = client.BDinter
   cursor = db.dataset.find() 
-  for aux in cursor:
-   print aux['num']
+  for aux in cursor: 
    suma += float(aux['num'])
    cont += 1
-  media = suma/float(cont)
+  media = round(float("{0:.2f}".format(suma/float(cont))),2) #redondeando a dos decimales
   
 #Carga la web con los datos correspondientes
  return render_template('PagWeb1.html', mean = mediaOK, media = media, BD = BDusada, 
- umbIN = umbOK, UmbActualOK = UmbActualOK)
+ umbIN = 0, graf = 0)
  
+@app.route('/g',methods=['POST'])
+def Grafica():
+ grafica = 1
+ return render_template('PagWeb1.html', mean = 0, umbIN = 0, graf = grafica)
+
 if __name__ == '__main__':
  app.run(host ='0.0.0.0')
