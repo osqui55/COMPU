@@ -6,8 +6,8 @@
  <script type="text/javascript" src="static/js/Web1JS.js"></script>
 </head>
 <body>
- <table style="border: 1px solid #000000; background-color: #ffffff;" height="50" width="100%"><tr>
- <td><font face="times new roman" style="margin-left:55%" size="5"><b> COMPUTACI&Oacute;N EN RED </b></font><td>
+ <table style="border: 1px solid #000000; background-color: #ffffff; text-align: right" height="50" width="100%"><tr>
+ <td><font face="times new roman" style="margin-right:12%" size="5"><b> COMPUTACI&Oacute;N EN RED </b></font><td>
  <td><a target="blank" href="http://escuelapolitecnica.uah.es/"><img class="cabecera" name="uah" src="/static/pics/uah.gif" 
 	onmouseout="document.uah.src='/static/pics/uah.gif'" onmouseover="document.uah.src='/static/pics/uah_sel.gif'"></img></a></td>
  </tr></table>
@@ -31,43 +31,86 @@
  {% else %} <!-- si ya se ha introducido un umbral -->  
   {% if UmbActualOK == 1 %}
  <p align="center" font="Arial"><br>
-  Se ha introducido {{ val_umbral }} como umbral para comprobar los valores actuales aun sin almacenar.<br>
+  Se ha introducido <b>{{ val_umbral }}</b> como umbral para comprobar los valores actuales aun sin almacenar.<br>
   <b>Recibir&aacute; un aviso cuando se supere dicho umbral.</b></p>
   {% else %}
  <p align="center" font="Arial"><br>
-  Se ha introducido {{ val_umbral }} como umbral para comprobar el hist&oacute;rico de datos almacenados</p>
+  Se ha introducido <b>{{ val_umbral }}</b> como umbral para comprobar el hist&oacute;rico de datos almacenados</p>
   {% endif %}
- <form action="/">
-  <table cellspacing="5" align="center"><tr>
-   <td><input class="boton" type="submit" value="Nuevo umbral"></td>
+  <table cellspacing="15" align="center"><tr>
+   <td><form action="/"><input class="boton" type="submit" value="Nuevo umbral"></form></td>
    {% if UmbActualOK == 1 %}
   <!-- Se avisa mediante un mensaje diferente --> 
+   <td><button id="bt">Act</button></td>
+	<script>
+	document.getElementById('bt').onclick = function(){
+		Push.create("UMBRAL SUPERADO",{
+			body: "Se acaba de superar el umbral introducido",
+			icon: "static/pics/ok.jpg",
+			timeout: 5000
+		});
+	}
+	</script>
    {% else %}
     {% if umbSup == 1 %} <!-- si se supera el umbral --> 
-   <td><img class="ok" src="/static/pics/ok.jpg"/></td>
-   <td><p>Superado el {{ fecha }} a las {{ hora }}</p></td>   
-    {% else %}
-   <td><img class="ok" src="/static/pics/nok.jpg"></img></td>
-   <td><p>Umbral no superado. Pruebe de nuevo.</p></td>
+	<td><img class="ok" src="/static/pics/ok.jpg"/></td>
+	<td><p>Superado por ultima vez el {{ fecha }} a las {{ hora }}</p></td>  
+      <!-- opción de ver el historial de valores que superaron el umbral -->
+	  {% if historial is defined %}
+       {% if historial == 1 %}
+	<td><form action="/h"><input class="b2" type="submit" value="historial"></form></td>	  
+       {% else %}
+	<td><form action="/h"><input class="boton" type="submit" value="historial"></form></td>	     
+	   {% endif %}
+	  {% endif %}
+	{% else %}
+	<td><img class="ok" src="/static/pics/nok.jpg"></img></td>
+	<td><p>Umbral no superado. Pruebe de nuevo.</p></td>
     {% endif %}
    {% endif %}
-  </tr></table>
- </form>
+   </tr></table>
+  {% if historial is defined %}
+   {% if historial == 1 %}
+   <!-- Se muestra el historial de valores que superaron el umbral-->
+   <p align="center"><b>Historial de los valores que superaron el umbral</b></p>
+   <table class="tabla" align="center"><tr>
+	<td><table class="tabla2" align="center">
+	 <tr><th> Numero </th></tr>
+    {% for numero in numeros %}
+	 <tr><td>{{ numero }}</td></tr>
+  	{% endfor %}
+	</table></td>
+	<td><table class="tabla2" align="center">
+	 <tr><th> Fecha </th></tr>
+    {% for fecha in fechas %}
+	 <tr><td>{{ fecha }}</td></tr>
+  	{% endfor %}
+	</table></td>
+	<td><table class="tabla2" align="center">
+	 <tr><th> Hora </th></tr>
+    {% for hora in horas %}
+	 <tr><td>{{ hora }}</td></tr>
+  	{% endfor %}
+	</table></td>
+   </tr></table>
+   {% endif %}
+  {% endif %}
  {% endif %}
 
 <!-- Media --> 
- <p align="center" font="Arial"><br>
+ <p align="center" font="Arial">
   <b>Puede realizar la media de los valores almacenados de la BD (alternando BD interna/externa)</b></p>
  <form action="/m">
-  <table cellspacing="5" align="center"><tr>
-   <td><input class="boton" type="submit" value="Media"></td>
+  <table cellspacing="5" align="center"><tr>   
    {% if mean == 1 %}  
+   <td><input class="boton" type="submit" value="Cambio de BD"></td></form>
    <td width="13"/>
    <td>La media es <b> {{ media }} </b><br>
    <p> BD utilizada -> <b> {{ BD }} </b></p></td>
+   {% else %}
+   <td><input class="boton" type="submit" value="Media"></td>
    {% endif %}
   </tr></table>
- </form>
 
 <!-- Gráfica --> 
  <p align="center" font="Arial"><br>
@@ -78,7 +121,12 @@
    <input class="boton" name="grafica" type="submit" value="Gr&aacute;fica">
   </div>
  </form>
-  {% else %}
+  {% else %} 
+ <form action="/g" method="post">
+  <div align="center">
+   <input class="b2" name="grafica" type="submit" value="Gr&aacute;fica">
+  </div>
+ </form>
   <center>
    <br><iframe src="https://beebotte.com/dash/d2e61d60-b89a-11e7-bfef-6f68fef5ca14#.We9bno9OL-s" 
    style="border:none;" width="500" height="500"></iframe>

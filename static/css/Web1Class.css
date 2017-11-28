@@ -11,12 +11,13 @@ body {
 img.cabecera{
 	width: 120; 
 	height: 35; 
-	margin-left: 50%;
 }
 img.ok{
 	width: 35; 
 	height: 35; 
 }
+
+/*boton*/ 
 input.boton {
 	border: 1px solid #000a45; /*anchura, estilo y color borde*/
 	padding: 10px; /*espacio alrededor texto*/
@@ -36,9 +37,47 @@ input.boton {
 	border: 1px solid #fdff00; /*color borde*/
 	color: #fdff00; /*color texto*/
  }
+ 
+ /*boton2*/ 
+ input.b2 {
+	border: 1px solid #000a45; /*anchura, estilo y color borde*/
+	padding: 4px; /*espacio alrededor texto*/
+	background-color: #df3a01; /*color botón*/
+	color: #ffffff; /*color texto*/
+	text-decoration: none; /*decoración texto*/
+	text-transform: uppercase; /*capitalización texto*/
+	font-family: 'Helvetica', sans-serif; /*tipografía texto*/	
+	height: 25px; /*Altura boton*/
+	border-radius: 50px; /*bordes redondos*/
+	box-shadow: 0 5px 0 #000f6c, 0px 9px 7px rgba(0,0,0,0.4), inset 0px 2px 9px rgba(255,255,255,0.4), inset 0 -2px 9px rgba(0,0,0,0.2);
+ } 
+ input.b2:active { /*efecto pulsado*/
+	transform: perspective(600px) translateZ(-75px) rotateZ(-0.5deg) rotateX(-10deg);
+ }
+ input.b2:hover { /*marca de seleccion*/
+	border: 1px solid #fdff00; /*color borde*/
+	color: #fdff00; /*color texto*/
+ }
+ 
+ /*Tabla de valores del histotial*/
+table.tabla{  
+	caption-side: center;
+	border: 1px solid black; 
+	background-color: #2E64FE; 
+}
+table.tabla2{ 
+	caption-side: center;
+	border: 1px dotted #0B0B61; 
+	background-color: #2E9AFE;
+	font-family: verdana, arial; 
+	font-size: 10pt; 
+	text-align: center;
+}
+ 
+/*Caja de texto*/
  input.box {
 	border: 1px solid #000a45; /*anchura, estilo y color borde*/
-	padding: 10px; /*espacio alrededor texto*/
+	padding: 3px; /*espacio alrededor texto*/
 	width: 90px; /*ancho caja*/
 	height: 30px; /*altura caja*/
 	background-color: #ffffff; /*color caja*/
@@ -48,8 +87,8 @@ input.boton {
 	font-family: 'Helvetica', sans-serif; /*tipografía texto*/
  }
 
-/* check box redondo*/ 
-.roundedOne {
+/*check box redondo*/ 
+div.roundedOne {
 	width: 15px;
 	height: 15px;
 	background: #fcfff4;
@@ -63,7 +102,7 @@ input.boton {
 	box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);
 	position: relative;
 }
-.roundedOne label {
+div.roundedOne label {
 	cursor: pointer;
 	position: absolute;
 	width: 18px;
@@ -72,8 +111,8 @@ input.boton {
 	-webkit-border-radius: 50px;
 	-moz-border-radius: 50px;
 	border-radius: 50px;
-	left: -1px;
-	top: -1px;
+	left: 1px;
+	top: 1px;
 
 	-webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);
 	-moz-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);
@@ -86,7 +125,7 @@ input.boton {
 	background: linear-gradient(top, #222 0%, #45484d 100%);
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#222', endColorstr='#45484d',GradientType=0 );
 }
-.roundedOne label:after {
+div.roundedOne label:after {
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
 	filter: alpha(opacity=0);
 	opacity: 0;
@@ -112,12 +151,12 @@ input.boton {
 	-moz-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);
 	box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);
 }
-.roundedOne label:hover::after {
+div.roundedOne label:hover::after {
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
 	filter: alpha(opacity=30);
 	opacity: 0.3;
 }
-.roundedOne input[type=checkbox]:checked + label:after {
+div.roundedOne input[type=checkbox]:checked + label:after {
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
 	filter: alpha(opacity=100);
 	opacity: 1;
