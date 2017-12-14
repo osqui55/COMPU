@@ -7,8 +7,8 @@
 		<script type="text/javascript" src='static/js/subscription.js'></script>
 		<script type="text/javascript" src='static/js/socketio.js'></script>
 		<script type="text/javascript" src='static/js/connector.js'></script>
-		<script type="text/javascript" src="//cdn.sendpulse.com/28edd3380a1c17cf65b137fe96516659/js/push/ab0482ec8f204a01e4196382c1bbc29e_0.js" async></script>
-		<script type="text/javascript"  src='//beebotte.com/bbt.js' ></script>
+		<script src='socket.io.min.js'></script>
+		<script src='//beebotte.com/bbt.js' ></script>
 	</head>
 	<body>
 		<table style="border: 1px solid #000000; background-color: #ffffff; text-align: right" height="50" width="100%">
@@ -79,8 +79,18 @@
 		   
 					{% if UmbActualOK == 1 %}
 					<!-- Se avisa mediante un mensaje diferente --> 
+						<script>
+							var bbt = new BBT('acf58919629d0c03c6499ad25d366389');
+							bbt.subscribe({
+								channel: 'BDext',
+								resource: 'num', 
+							}, function(msg) { 
+								var ValActual = res;
+								AvisoPush(ValActual);
+							});
+						</script>
 						<td>
-							<input class="b2" type="submit" onclick="AvisoPush()" value="Act"/>
+							<input class="b2" type="submit" onclick="AvisoPush()" value="Act"/> <!-- botón temporal -->
 						</td>
 						   
 					{% else %}

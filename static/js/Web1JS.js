@@ -44,38 +44,20 @@ function validar(){
 			return false;
 		}
 		else{
+			// Se guardan los valores
 			localStorage.UmbralActual = document.fUmbral.Modo2.checked;
 			localStorage.ValorUmbral = document.fUmbral.umbral.value;
-			alert("primero")
-			var bbt = require('beebotte');
-			alert("esa nataliaa")
-			var bbt = new BBT('acf58919629d0c03c6499ad25d366389');
-			alert("uoooo")
-			<!-- bbt.subscribe({channel: 'BDext', resource: 'num', read: true, write: true}, function(msg) {AvisoPush();}); -->
-			bbt.subscribe({
-			  channel: 'BDext',
-			  resource: 'num',
-			}, function(msg){
-			  /* Will get here every time a new resource data is written or published */
-			  alert("EEEENGAAAA");
-			  alert(msg);
-			  alert(resource);
-			  AvisoPush();
-			});
-			alert("FIN")
 			document.fUmbral.submit();
 		}
 	}
 }	
 
-function AvisoPush(){
-	var ValActual = 38;
+function AvisoPush(ValActual){
 	var UmbActual = JSON.parse(localStorage.UmbralActual); //string to boolean
     var ValUmbral = Number(localStorage.ValorUmbral); //string to number
 	
 	if(UmbActual == true){
 		if(Number(ValActual) > ValUmbral){
-			alert("SUPERADO")
 			Push.create("UMBRAL SUPERADO",{
 					body: "Se acaba de superar el umbral introducido",
 					icon: "static/pics/ok.jpg",

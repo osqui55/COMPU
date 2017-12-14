@@ -256,7 +256,7 @@ def Grafica():
  except:
   grafica = 1
  
- #Quitar poner grafica
+ #Quitar o poner grafica
  if grafica == 0:
   grafica = 1
   return render_template('PagWeb1.html',ultVal=ultVal,umbIN=umbOK,UmbActualOK=UmbActualOK,val_umbral=umb,
